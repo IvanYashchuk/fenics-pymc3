@@ -9,10 +9,10 @@ if sys.version_info < (3, 6):
 version = "0.1"
 
 setup(
-    name="firedrake_pymc3",
-    description="Firedrake + PyMC3",
+    name="fenics_pymc3",
+    description="FEniCS + PyMC3",
     version=version,
     author="Ivan Yashchuk",
     license="MIT",
-    packages=["firedrake_pymc3"],
+    packages=["fenics_pymc3"],
 )
