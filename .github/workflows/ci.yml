@@ -42,7 +42,6 @@ jobs:
           python -m pip install pytest
           python -m pip install pytest-cov
           python -m pip install pytest-check
-          python -m pip install coveralls
           python -m pip install fdm
 
       - name: Install fenics-pymc3

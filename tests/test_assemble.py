@@ -6,9 +6,11 @@ import fenics_adjoint as fa
 import ufl
 
 import fdm
+import theano
 
 from fenics_pymc3 import fem_eval, vjp_fem_eval_impl
 from fenics_pymc3 import fenics_to_numpy, numpy_to_fenics
+from fenics_pymc3 import create_fenics_theano_op
 
 
 mesh = fa.UnitSquareMesh(3, 2)
@@ -57,3 +59,45 @@ def test_vjp_assemble_eval():
     check2 = np.allclose(vjp_out[1], fdm_jac1)
     check3 = np.allclose(vjp_out[2], fdm_jac2)
     assert check1 and check2 and check3
+
+
+hh = create_fenics_theano_op(templates)(assemble_fenics)
+
+# from fenics_pymc3 import create_fenics_theano_vjp_op
+# gg = create_fenics_theano_vjp_op(templates)(assemble_fenics)
+
+# import theano
+
+# x = theano.tensor.vector()
+# y = theano.gof.generic()
+# z = theano.gof.generic()
+# j = theano.gof.generic()
+# f = theano.function([x, y, z, j], gg(x, y, z, j), on_unused_input='warn')
+# hh0 = lambda x: hh(x, inputs[1], inputs[2])  # noqa: E731
+# hh1 = lambda y: hh(inputs[0], y, inputs[2])  # noqa: E731
+# hh2 = lambda z: hh(inputs[0], inputs[1], z)  # noqa: E731
+
+x = theano.tensor.vector()
+y = theano.tensor.vector()
+z = theano.tensor.vector()
+g = theano.tensor.vector()
+
+o = hh(x, y, z)
+
+o1 = theano.tensor.sum(o)
+gs = theano.grad(o1, x)
+
+# theano.tensor.Lop(o, [x, y, z], g)
+
+import theano.tests.unittest_tools
+
+f = theano.function([x, y, z], hh(x, y, z))
+
+f(*inputs)
+
+# dodx = theano.grad(theano.tensor.sum(o), x)
+# g = theano.tensor.scalar()
+# f_grad = theano.function([g], dodx)
+
+VJ = theano.tensor.Lop(o, [x, y, z], g)
+fg = theano.function([g, x], VJ)
