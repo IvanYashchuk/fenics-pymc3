@@ -105,19 +105,15 @@ class FenicsVJPOp(Op):
         numpy_output, fenics_output, fenics_inputs, tape = fem_eval(
             self.ofunc, self.templates, *primal_inputs
         )
+        # fenics_output, fenics_inputs, tape = self.fenics_output, self.fenics_inputs, self.tape
         numpy_grads = vjp_fem_eval_impl(
             g, fenics_output, fenics_inputs, tape
         )
 
-        # theano_grads = [
-        #     theano.gradient.grad_undefined(self, i, inputs[i])
-        #     if ng is None
-        #     else theano.shared(ng)
-        #     for i, ng in enumerate(list(numpy_grads))
-        # ]
-
         theano_grads = [
-            ng
+            theano.gradient.grad_undefined(self, i, inputs[i])
+            if ng is None
+            else ng
             for i, ng in enumerate(list(numpy_grads))
         ]
 
@@ -143,8 +139,8 @@ class FenicsOp(Op):
         return Apply(
             self,
             [theano.tensor.as_tensor_variable(x) for x in inputs],
-            # [theano.tensor.dvector(), fenics_output, fenics_inputs, tape],
-            [theano.tensor.dvector()],
+            [theano.tensor.dvector(), fenics_output, fenics_inputs, tape],
+            # [theano.tensor.dvector()],
         )
 
     def perform(self, node, inputs, outputs):
@@ -152,44 +148,29 @@ class FenicsOp(Op):
             self.ofunc, self.templates, *inputs
         )
         outputs[0][0] = numpy_output
-        # outputs[1][0] = fenics_output
-        # outputs[2][0] = fenics_inputs
-        # outputs[3][0] = tape
+        outputs[1][0] = fenics_output
+        outputs[2][0] = fenics_inputs
+        outputs[3][0] = tape
 
-    # def L_op(self, inputs, outputs, output_grads):
-    #     # numpy_output, fenics_output, fenics_inputs, tape = outputs
-    #     # g_numpy_output, _, _, _ = output_grads
-    #     # if tape is None or fenics_inputs is None or fenics_output is None:
-    #     #     raise AttributeError(
-    #     #         "Something went wrong during the forward pass and tape is not saved"
-    #     #     )
+    def L_op(self, inputs, outputs, output_grads):
+        numpy_output, fenics_output, fenics_inputs, tape = outputs
+        g_numpy_output, _, _, _ = output_grads
+        if tape is None or fenics_inputs is None or fenics_output is None:
+            raise AttributeError(
+                "Something went wrong during the forward pass and tape is not saved"
+            )
 
-    #     # Replace gradients wrt disconnected variables with
-    #     # zeros. This is a work-around for issue #1063.
-    #     # copied from
-    #     # https://github.com/Theano/Theano/blob/master/theano/tensor/nlinalg.py#L350
-    #     # g_outputs = _zero_disconnected([numpy_output], [g_numpy_output])
-
-    #     # vjp_op = FenicsVJPOp(self.ofunc, self.templates)
-    #     # theano_grads = self.vjp_op(g_outputs[0], fenics_output, fenics_inputs, tape)
-    #     theano_grads = self.vjp_op(output_grads[0], *inputs)
-    #     return theano_grads
-
-    def grad(self, inputs, output_grads):
-        g, = output_grads
         vjp_op = FenicsVJPOp(self.ofunc, self.templates)
-        theano_grads = vjp_op(g, *inputs)
+        # theano_grads = vjp_op(output_grads[0], fenics_output, fenics_inputs, tape)
+        theano_grads = vjp_op(output_grads[0], *inputs)
         return theano_grads
 
+    # def grad(self, inputs, output_grads):
+    #     g, = output_grads
+    #     vjp_op = FenicsVJPOp(self.ofunc, self.templates)
+    #     theano_grads = vjp_op(g, *inputs)
+    #     return theano_grads
 
-def _zero_disconnected(outputs, grads):
-    l = []
-    for o, g in zip(outputs, grads):
-        if isinstance(g.type, DisconnectedType):
-            l.append(o.zeros_like())
-        else:
-            l.append(g)
-    return l
 
 def create_fenics_theano_op(fenics_templates: FenicsVariable) -> Callable:
     """Return `f(*args) = build_jax_fem_eval(*args)(ofunc(*args))`.

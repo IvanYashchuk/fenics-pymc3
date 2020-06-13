@@ -72,4 +72,4 @@ with pm.Model() as fit_diffusion:
     d = pm.Normal('d', mu=predicted_solution, sd=sigma, observed=noisy_solution)
 
 with fit_diffusion:
-    trace = pm.sample(500)
+    trace = pm.sample(500, chains=1)
