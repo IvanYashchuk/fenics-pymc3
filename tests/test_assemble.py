@@ -6,7 +6,11 @@ import fenics_adjoint as fa
 import ufl
 
 import fdm
+
 import theano
+theano.config.optimizer='fast_compile'
+theano.config.exception_verbosity='high'
+theano.config.compute_test_value = 'warn'
 
 from fenics_pymc3 import fem_eval, vjp_fem_eval_impl
 from fenics_pymc3 import fenics_to_numpy, numpy_to_fenics
@@ -63,19 +67,17 @@ def test_vjp_assemble_eval():
 
 hh = create_fenics_theano_op(templates)(assemble_fenics)
 
-# from fenics_pymc3 import create_fenics_theano_vjp_op
-# gg = create_fenics_theano_vjp_op(templates)(assemble_fenics)
+from fenics_pymc3 import create_fenics_theano_vjp_op
+gg = create_fenics_theano_vjp_op(templates)(assemble_fenics)
 
-# import theano
+x = theano.tensor.vector()
+y = theano.tensor.vector()
+z = theano.tensor.vector()
+g = theano.tensor.vector()
+f = theano.function([g, x, y, z], gg(g, x, y, z), on_unused_input='warn')
+f(np.ones(1), *inputs)
 
-# x = theano.tensor.vector()
-# y = theano.gof.generic()
-# z = theano.gof.generic()
-# j = theano.gof.generic()
-# f = theano.function([x, y, z, j], gg(x, y, z, j), on_unused_input='warn')
-# hh0 = lambda x: hh(x, inputs[1], inputs[2])  # noqa: E731
-# hh1 = lambda y: hh(inputs[0], y, inputs[2])  # noqa: E731
-# hh2 = lambda z: hh(inputs[0], inputs[1], z)  # noqa: E731
+##
 
 x = theano.tensor.vector()
 y = theano.tensor.vector()
@@ -100,4 +102,4 @@ f(*inputs)
 # f_grad = theano.function([g], dodx)
 
 VJ = theano.tensor.Lop(o, [x, y, z], g)
-fg = theano.function([g, x], VJ)
+fg = theano.function([g, x, y, z], VJ)
