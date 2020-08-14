@@ -1,4 +1,4 @@
-# fenics-pymc3 &middot; [![Build](https://github.com/ivanyashchuk/fenics-pymc3/workflows/CI/badge.svg)](https://github.com/ivanyashchuk/fenics-pymc3/actions?query=workflow%3ACI+branch%3Amaster) [![Coverage Status](https://coveralls.io/repos/github/IvanYashchuk/fenics-pymc3/badge.svg?branch=master)](https://coveralls.io/github/IvanYashchuk/fenics-pymc3?branch=master)
+# fenics-pymc3 &middot; [![Build](https://github.com/ivanyashchuk/fenics-pymc3/workflows/CI/badge.svg)](https://github.com/ivanyashchuk/fenics-pymc3/actions?query=workflow%3ACI+branch%3Amaster) [![Coverage Status](https://coveralls.io/repos/github/IvanYashchuk/fenics-pymc3/badge.svg?branch=master)](https://coveralls.io/github/IvanYashchuk/fenics-pymc3?branch=master) [![DOI](https://zenodo.org/badge/269920875.svg)](https://zenodo.org/badge/latestdoi/269920875)
 
 This package enables use of [FEniCS](http://fenicsproject.org) for solving differentiable variational problems in [PyMC3](https://docs.pymc.io/).
 
