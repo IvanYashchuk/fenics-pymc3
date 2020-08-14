@@ -3,6 +3,7 @@ import pytest
 import numpy as np
 
 import fenics
+
 fenics.set_log_level(fenics.LogLevel.ERROR)
 import fenics_adjoint as fa
 import ufl
@@ -62,16 +63,22 @@ theano_fem = create_fenics_theano_op(templates)(solve_fenics)
 
 import pymc3 as pm
 import theano.tensor as tt
+
 with pm.Model() as fit_diffusion:
     sigma = pm.InverseGamma("sigma", alpha=3.0, beta=0.5)
 
-    kappa0 = pm.TruncatedNormal("kappa0", mu=1.0, sigma=0.5, lower=1e-5, upper = 2.0, shape=(1,))#truncated(Normal(1.0, 0.5), 1e-5, 2)
-    kappa1 = pm.TruncatedNormal("kappa1", mu=0.7, sigma=0.5, lower=1e-5, upper = 2.0, shape=(1,))#truncated(Normal(0.7, 0.5), 1e-5, 2)
+    kappa0 = pm.TruncatedNormal(
+        "kappa0", mu=1.0, sigma=0.5, lower=1e-5, upper=2.0, shape=(1,)
+    )  # truncated(Normal(1.0, 0.5), 1e-5, 2)
+    kappa1 = pm.TruncatedNormal(
+        "kappa1", mu=0.7, sigma=0.5, lower=1e-5, upper=2.0, shape=(1,)
+    )  # truncated(Normal(0.7, 0.5), 1e-5, 2)
 
     predicted_solution = pm.Deterministic("pred_sol", theano_fem(kappa0, kappa1))
 
-    d = pm.Normal('d', mu=predicted_solution, sd=sigma, observed=noisy_solution)
+    d = pm.Normal("d", mu=predicted_solution, sd=sigma, observed=noisy_solution)
+
 
 def test_run_sample():
     with fit_diffusion:
-        trace = pm.sample(5, chains=1)
+        trace = pm.sample(5, tune=5, chains=1)
