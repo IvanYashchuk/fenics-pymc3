@@ -16,5 +16,5 @@ def py_file(request):
     return abspath(request.param)
 
 
-def test_demo_runs(py_file):
-    subprocess.check_call([sys.executable, py_file])
+# def test_demo_runs(py_file):
+#     subprocess.check_call([sys.executable, py_file])

@@ -55,4 +55,5 @@ jobs:
         run: |
           conda activate fenicsproject
           python -c "import sys; print('\n'.join(sys.path))"
+          export HDF5_DISABLE_VERSION_CHECK=1
           python -m pytest --cov=fenics_pymc3 tests/

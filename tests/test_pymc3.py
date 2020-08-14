@@ -9,7 +9,8 @@ import ufl
 
 import fdm
 
-from fenics_pymc3 import fem_eval, vjp_fem_eval_impl, create_fenics_theano_op
+# from fenics_pymc3 import fem_eval, vjp_fem_eval_impl
+from fenics_pymc3 import create_fenics_theano_op
 from fenics_pymc3 import fenics_to_numpy, numpy_to_fenics
 
 n = 25
@@ -71,5 +72,6 @@ with pm.Model() as fit_diffusion:
 
     d = pm.Normal('d', mu=predicted_solution, sd=sigma, observed=noisy_solution)
 
-with fit_diffusion:
-    trace = pm.sample(500, chains=1)
+def test_run_sample():
+    with fit_diffusion:
+        trace = pm.sample(5, chains=1)

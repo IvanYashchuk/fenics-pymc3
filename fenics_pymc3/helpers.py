@@ -2,6 +2,8 @@ import fenics
 import pyadjoint
 import numpy as np
 
+from fenics_numpy import numpy_to_fenics
+
 import warnings
 
 from typing import Type, List, Union, Iterable, Callable, Tuple
@@ -9,78 +11,78 @@ from typing import Type, List, Union, Iterable, Callable, Tuple
 FenicsVariable = Union[fenics.Constant, fenics.Function]
 
 
-def fenics_to_numpy(fenics_var):
-    """Convert FEniCS variable to numpy array.
-    Serializes the input so that all processes have the same data."""
-    if isinstance(fenics_var, fenics.Constant):
-        return np.asarray(fenics_var.values())
+# def fenics_to_numpy(fenics_var):
+#     """Convert FEniCS variable to numpy array.
+#     Serializes the input so that all processes have the same data."""
+#     if isinstance(fenics_var, fenics.Constant):
+#         return np.asarray(fenics_var.values())
 
-    if isinstance(fenics_var, fenics.Function):
-        fenics_vec = fenics_var.vector()
-        if fenics_vec.mpi_comm().size > 1:
-            data = fenics_vec.gather(np.arange(fenics_vec.size(), dtype="I"))
-        else:
-            data = fenics_vec.get_local()
-        return np.asarray(data)
+#     if isinstance(fenics_var, fenics.Function):
+#         fenics_vec = fenics_var.vector()
+#         if fenics_vec.mpi_comm().size > 1:
+#             data = fenics_vec.gather(np.arange(fenics_vec.size(), dtype="I"))
+#         else:
+#             data = fenics_vec.get_local()
+#         return np.asarray(data)
 
-    if isinstance(fenics_var, fenics.GenericVector):
-        if fenics_var.mpi_comm().size > 1:
-            data = fenics_var.gather(np.arange(fenics_var.size(), dtype="I"))
-        else:
-            data = fenics_var.get_local()
-        return np.asarray(data)
+#     if isinstance(fenics_var, fenics.GenericVector):
+#         if fenics_var.mpi_comm().size > 1:
+#             data = fenics_var.gather(np.arange(fenics_var.size(), dtype="I"))
+#         else:
+#             data = fenics_var.get_local()
+#         return np.asarray(data)
 
-    if isinstance(fenics_var, (pyadjoint.AdjFloat, float)):
-        return np.asarray(fenics_var)
+#     if isinstance(fenics_var, (pyadjoint.AdjFloat, float)):
+#         return np.asarray(fenics_var)
 
-    raise ValueError("Cannot convert " + str(type(fenics_var)))
+#     raise ValueError("Cannot convert " + str(type(fenics_var)))
 
 
-def numpy_to_fenics(numpy_array, fenics_var_template):  # noqa: C901
-    """Convert numpy array to FEniCS variable"""
+# def numpy_to_fenics(numpy_array, fenics_var_template):  # noqa: C901
+#     """Convert numpy array to FEniCS variable"""
 
-    if isinstance(fenics_var_template, fenics.Constant):
-        if numpy_array.shape == (1,):
-            return type(fenics_var_template)(numpy_array[0])
-        else:
-            return type(fenics_var_template)(numpy_array)
+#     if isinstance(fenics_var_template, fenics.Constant):
+#         if numpy_array.shape == (1,):
+#             return type(fenics_var_template)(numpy_array[0])
+#         else:
+#             return type(fenics_var_template)(numpy_array)
 
-    if isinstance(fenics_var_template, fenics.Function):
-        function_space = fenics_var_template.function_space()
+#     if isinstance(fenics_var_template, fenics.Function):
+#         function_space = fenics_var_template.function_space()
 
-        u = type(fenics_var_template)(function_space)
+#         u = type(fenics_var_template)(function_space)
 
-        # assume that given numpy array is global array that needs to be distrubuted across processes
-        # when FEniCS function is created
-        fenics_size = u.vector().size()
-        np_size = numpy_array.size
+#         # assume that given numpy array is global array that needs to be distrubuted across processes
+#         # when FEniCS function is created
+#         fenics_size = u.vector().size()
+#         np_size = numpy_array.size
 
-        if np_size != fenics_size:
-            err_msg = (
-                f"Cannot convert numpy array to Function:"
-                f"Wrong size {numpy_array.size} vs {u.vector().size()}"
-            )
-            raise ValueError(err_msg)
+#         if np_size != fenics_size:
+#             err_msg = (
+#                 f"Cannot convert numpy array to Function:"
+#                 f"Wrong size {numpy_array.size} vs {u.vector().size()}"
+#             )
+#             raise ValueError(err_msg)
 
-        if numpy_array.dtype != np.float_:
-            err_msg = (
-                f"The numpy array must be of type {np.float_}, "
-                "but got {numpy_array.dtype}"
-            )
-            raise ValueError(err_msg)
+#         if numpy_array.dtype != np.float_:
+#             err_msg = (
+#                 f"The numpy array must be of type {np.float_}, "
+#                 "but got {numpy_array.dtype}"
+#             )
+#             raise ValueError(err_msg)
 
-        range_begin, range_end = u.vector().local_range()
-        numpy_array = np.asarray(numpy_array)
-        local_array = numpy_array.reshape(fenics_size)[range_begin:range_end]
-        u.vector().set_local(local_array)
-        u.vector().apply("insert")
-        return u
+#         range_begin, range_end = u.vector().local_range()
+#         numpy_array = np.asarray(numpy_array)
+#         local_array = numpy_array.reshape(fenics_size)[range_begin:range_end]
+#         u.vector().set_local(local_array)
+#         u.vector().apply("insert")
+#         return u
 
-    if isinstance(fenics_var_template, pyadjoint.AdjFloat):
-        return float(numpy_array)
+#     if isinstance(fenics_var_template, pyadjoint.AdjFloat):
+#         return float(numpy_array)
 
-    err_msg = f"Cannot convert numpy array to {fenics_var_template}"
-    raise ValueError(err_msg)
+#     err_msg = f"Cannot convert numpy array to {fenics_var_template}"
+#     raise ValueError(err_msg)
 
 
 def get_numpy_input_templates(
