@@ -1,5 +1,11 @@
 import theano
-from theano.gof import Op, Apply
+
+try:
+    from theano.graph.op import Op, Apply, type
+except ModuleNotFoundError:
+    # older version of theano
+    from theano.gof import Op, Apply, type
+
 
 import functools
 
@@ -7,7 +13,7 @@ from fecr import evaluate_primal, evaluate_pullback
 
 
 class FenicsVJPOp(Op):
-    params_type = theano.gof.type.Generic()
+    params_type = type.Generic()
     __props__ = ("ofunc", "templates", "fenics_output", "fenics_inputs", "tape")
 
     def __init__(self, ofunc, templates, fenics_output, fenics_inputs, tape):
