@@ -68,10 +68,11 @@ jobs:
           export HDF5_DISABLE_VERSION_CHECK=1
           python -m pytest --cov=fenics_pymc3 --cov-config=tests/.coveragerc tests/fenics -vvv
 
-      - name: Send coveralls
+      - name: Send coverage
         shell: bash -l {0}
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         run: |
           conda activate fenicsproject
           coveralls
+          bash <(curl -s https://codecov.io/bash)
