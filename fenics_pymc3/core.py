@@ -1,7 +1,8 @@
 import theano
 
 try:
-    from theano.graph.op import Op, Apply, type
+    from theano.graph.op import Op, Apply
+    from theano.graph import type
 except ModuleNotFoundError:
     # older version of theano
     from theano.gof import Op, Apply, type
