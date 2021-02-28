@@ -1,9 +1,9 @@
 # fenics-pymc3 &middot; [![Build](https://github.com/ivanyashchuk/fenics-pymc3/workflows/CI/badge.svg)](https://github.com/ivanyashchuk/fenics-pymc3/actions?query=workflow%3ACI+branch%3Amaster) [![Coverage Status](https://coveralls.io/repos/github/IvanYashchuk/fenics-pymc3/badge.svg?branch=master)](https://coveralls.io/github/IvanYashchuk/fenics-pymc3?branch=master) [![DOI](https://zenodo.org/badge/269920875.svg)](https://zenodo.org/badge/latestdoi/269920875)
 
-This package enables use of [FEniCS](http://fenicsproject.org) for solving differentiable variational problems in [PyMC3](https://docs.pymc.io/).
+This package enables use of [FEniCS](https://fenicsproject.org/) or [Firedrake](https://firedrakeproject.org/)  for solving differentiable variational problems in [PyMC3](https://docs.pymc.io/).
 
 Automatic adjoint solvers for FEniCS programs are generated with [dolfin-adjoint/pyadjoint](http://www.dolfin-adjoint.org/en/latest/).
-These solvers make it possible to use Theano's (PyMC3 backend) reverse mode automatic differentiation with FEniCS.
+These solvers make it possible to use Theano's (PyMC3 backend) reverse mode automatic differentiation with FEniCS/Firedrake.
 
 Current limitations:
 * Differentiation wrt Dirichlet boundary conditions and mesh coordinates is not implemented yet.
@@ -19,8 +19,8 @@ fenics.set_log_level(fenics.LogLevel.ERROR)
 import fenics_adjoint as fa
 import ufl
 
-from fenics_pymc3 import create_fenics_theano_op
-from fenics_pymc3 import fenics_to_numpy, numpy_to_fenics
+from fenics_pymc3 import create_fem_theano_op
+from fenics_pymc3 import to_numpy
 
 # Create mesh for the unit square domain
 n = 10
@@ -50,7 +50,7 @@ true_kappa0 = fa.Constant(1.25)
 true_kappa1 = fa.Constant(0.55)
 
 true_solution = solve_fenics(true_kappa0, true_kappa1)
-true_solution_numpy = fenics_to_numpy(true_solution)
+true_solution_numpy = to_numpy(true_solution)
 
 # Perturb the solution with noise
 noise_level = 0.05
@@ -61,7 +61,7 @@ noisy_solution = true_solution_numpy + noise
 templates = (fa.Constant(0.0), fa.Constant(0.0))
 
 # Now let's create Theano wrapper of `solve_fenics` function
-theano_fem_solver = create_fenics_theano_op(templates)(solve_fenics)
+theano_fem_solver = create_fem_theano_op(templates)(solve_fenics)
 
 # `theano_fem_solver` can now be used inside PyMC3's model
 import pymc3 as pm
@@ -91,14 +91,14 @@ pm.summary(trace)
 ```
 
 ## Installation
-First install [FEniCS](http://fenicsproject.org).
-Then install [dolfin-adjoint](http://www.dolfin-adjoint.org/en/latest/) with:
+First install [FEniCS](https://fenicsproject.org/download/) or [Firedrake](https://firedrakeproject.org/download.html).
+Then install [pyadjoint](http://www.dolfin-adjoint.org/en/latest/) with:
 
     python -m pip install git+https://github.com/dolfin-adjoint/pyadjoint.git@master
 
-Then install [numpy-fenics-adjoint](https://github.com/IvanYashchuk/numpy-fenics-adjoint) with:
+Then install [fecr](https://github.com/IvanYashchuk/fecr) with:
 
-    python -m pip install git+https://github.com/IvanYashchuk/numpy-fenics-adjoint@master
+    python -m pip install git+https://github.com/IvanYashchuk/fecr@master
 
 Then install [PyMC3](https://docs.pymc.io/) with:
 
@@ -113,6 +113,12 @@ After that install fenics-pymc3 with:
 If you found a bug, create an [issue].
 
 [issue]: https://github.com/IvanYashchuk/fenics-pymc3/issues/new
+
+## Asking questions and general discussion
+
+If you have a question or anything else, create a new [discussion]. Using issues is also fine!
+
+[discussion]: https://github.com/IvanYashchuk/fenics-pymc3/discussions/new
 
 ## Contributing
 
