@@ -7,14 +7,13 @@ import ufl
 
 import theano
 
-theano.config.optimizer = "fast_compile"
-theano.config.compute_test_value = "ignore"
-
 from fenics_pymc3 import create_fenics_theano_op
 from fenics_pymc3 import FenicsVJPOp
 
 from fenics_numpy import evaluate_primal, evaluate_vjp
 
+theano.config.optimizer = "fast_compile"
+theano.config.compute_test_value = "ignore"
 
 mesh = fa.UnitSquareMesh(3, 2)
 V = fenics.FunctionSpace(mesh, "P", 1)

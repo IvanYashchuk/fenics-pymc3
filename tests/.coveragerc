@@ -1,0 +1,15 @@
+# .coveragerc to control coverage.py
+[run]
+branch = True
+source = fenics_pymc3
+
+[report]
+ignore_errors = True
+omit =
+    examples/*
+    notebooks/*
+    tests/*
+    setup.py
+
+[html]
+directory = coverage_html
