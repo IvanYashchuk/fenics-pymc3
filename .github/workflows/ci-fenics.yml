@@ -1,6 +1,10 @@
-name: CI
+name: FEniCS
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
 
@@ -8,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
       - name: Setup Miniconda
-        uses: goanpeca/setup-miniconda@v1.0.2
+        uses: conda-incubator/setup-miniconda@v2
         with: 
           auto-update-conda: true
           python-version: 3.8
@@ -23,6 +27,7 @@ jobs:
         run: |
           conda info
           which python
+
       - name: Conda install FEniCS
         shell: bash -l {0}
         run: |
@@ -32,19 +37,20 @@ jobs:
           conda activate fenicsproject
           which python
           python -c "from dolfin import *"
+
       - name: Install dependencies
         shell: bash -l {0}
         run: |
           conda activate fenicsproject
           python -m pip install --upgrade pip
-          python -m pip install git+https://github.com/dolfin-adjoint/pyadjoint.git@master
-          python -m pip install git+https://github.com/IvanYashchuk/numpy-fenics-adjoint
-          python -m pip install pymc3
           python -m pip install pytest
           python -m pip install pytest-cov
           python -m pip install pytest-check
           python -m pip install coveralls
           python -m pip install fdm
+          python -m pip install git+https://github.com/dolfin-adjoint/pyadjoint.git@master
+          python -m pip install git+https://github.com/IvanYashchuk/fecr.git@master
+          python -m pip install pymc3
 
       - name: Install fenics-pymc3
         shell: bash -l {0}
@@ -60,5 +66,12 @@ jobs:
           conda activate fenicsproject
           python -c "import sys; print('\n'.join(sys.path))"
           export HDF5_DISABLE_VERSION_CHECK=1
-          python -m pytest --cov=fenics_pymc3 tests/
+          python -m pytest --cov=fenics_pymc3 --cov-config=tests/.coveragerc tests/fenics -vvv
+
+      - name: Send coveralls
+        shell: bash -l {0}
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: |
+          conda activate fenicsproject
           coveralls
