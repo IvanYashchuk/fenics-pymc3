@@ -10,7 +10,7 @@ import theano
 from fenics_pymc3 import create_fenics_theano_op
 from fenics_pymc3 import FenicsVJPOp
 
-from fenics_numpy import evaluate_primal, evaluate_vjp
+from fecr import evaluate_primal, evaluate_pullback
 
 theano.config.optimizer = "fast_compile"
 theano.config.compute_test_value = "ignore"
@@ -59,7 +59,9 @@ def test_theano_vjp():
     f = theano.function([g], vjp_op(g))
     theano_output = f(np.ones(1))
 
-    numpy_output = evaluate_vjp(np.ones(1), fenics_output, tuple(fenics_inputs), tape)
+    numpy_output = evaluate_pullback(
+        fenics_output, tuple(fenics_inputs), tape, np.ones(1)
+    )
     for to, no in zip(theano_output, numpy_output):
         with check:
             assert np.allclose(to, no)
