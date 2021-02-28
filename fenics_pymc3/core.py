@@ -3,7 +3,7 @@ from theano.gof import Op, Apply
 
 import functools
 
-from fenics_numpy import evaluate_primal, evaluate_vjp
+from fecr import evaluate_primal, evaluate_pullback
 
 
 class FenicsVJPOp(Op):
@@ -30,14 +30,16 @@ class FenicsVJPOp(Op):
     def perform(self, node, inputs, outputs, params):
         Δfenics_output = inputs[0]
         fenics_output, fenics_inputs, tape = params
-        numpy_grads = evaluate_vjp(Δfenics_output, fenics_output, fenics_inputs, tape)
+        numpy_grads = evaluate_pullback(
+            fenics_output, fenics_inputs, tape, Δfenics_output
+        )
 
         theano_grads = (
             theano.gradient.grad_undefined(self, i, inputs[i]) if ng is None else ng
             for i, ng in enumerate(numpy_grads)
         )
 
-        for i, tg in enumerate(numpy_grads):
+        for i, tg in enumerate(theano_grads):
             outputs[i][0] = tg
 
 
@@ -72,17 +74,17 @@ class FenicsOp(Op):
         return theano_grads
 
 
-def create_fenics_theano_op(fenics_templates):
-    """Return `f(*args) = create_fenics_theano_op(*args)(ofunc(*args))`.
-    Given the FEniCS-side function ofunc(*args), return the Theano Op,
+def create_fem_theano_op(fenics_templates):
+    """Return `f(*args) = create_fem_theano_op(*args)(ofunc(*args))`.
+    Given the FEniCS/Firedrake-side function ofunc(*args), return the Theano Op,
     that is callable and differentiable in Theano programs,
-    `f(*args) = create_fenics_theano_op(*args)(ofunc(*args))` with
+    `f(*args) = create_fem_theano_op(*args)(ofunc(*args))` with
     the VJP of `f`, where:
     `*args` are all arguments to `ofunc`.
     Args:
-    ofunc: The FEniCS-side function to be wrapped.
+    ofunc: The FEniCS/Firedrake-side function to be wrapped.
     Returns:
-    `f(args) = create_fenics_theano_op(*args)(ofunc(*args))`
+    `f(args) = create_fem_theano_op(*args)(ofunc(*args))`
     """
 
     def decorator(fenics_function):
@@ -96,3 +98,6 @@ def create_fenics_theano_op(fenics_templates):
         return theano_fem_eval
 
     return decorator
+
+
+create_fenics_theano_op = create_fem_theano_op
