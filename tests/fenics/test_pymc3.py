@@ -3,16 +3,18 @@ import pytest
 import numpy as np
 
 import fenics
-
-fenics.set_log_level(fenics.LogLevel.ERROR)
 import fenics_adjoint as fa
 import ufl
 
 import fdm
 
-# from fenics_pymc3 import fem_eval, vjp_fem_eval_impl
 from fenics_pymc3 import create_fenics_theano_op
-from fenics_pymc3 import fenics_to_numpy, numpy_to_fenics
+from fenics_pymc3 import to_numpy
+
+import pymc3 as pm
+import theano.tensor as tt
+
+fenics.set_log_level(fenics.LogLevel.ERROR)
 
 n = 25
 mesh = fa.UnitSquareMesh(n, n)
@@ -51,7 +53,7 @@ true_kappa1 = fa.Constant(0.55)
 # true_kappa1.interpolate(fa.Constant(0.55))
 
 true_solution = solve_fenics(true_kappa0, true_kappa1)
-true_solution_numpy = fenics_to_numpy(true_solution)
+true_solution_numpy = to_numpy(true_solution)
 
 # perturb state solution and create synthetic measurements
 noise_level = 0.05
@@ -60,9 +62,6 @@ noise = np.random.normal(scale=noise_level * MAX, size=true_solution_numpy.size)
 noisy_solution = true_solution_numpy + noise
 
 theano_fem = create_fenics_theano_op(templates)(solve_fenics)
-
-import pymc3 as pm
-import theano.tensor as tt
 
 with pm.Model() as fit_diffusion:
     sigma = pm.InverseGamma("sigma", alpha=3.0, beta=0.5)
@@ -81,4 +80,4 @@ with pm.Model() as fit_diffusion:
 
 def test_run_sample():
     with fit_diffusion:
-        trace = pm.sample(5, tune=5, chains=1)
+        pm.sample(5, tune=5, chains=1)
