@@ -7,8 +7,8 @@ import ufl
 
 import theano
 
-from fenics_pymc3 import create_fenics_theano_op
-from fenics_pymc3 import FenicsVJPOp
+from fenics_pymc import create_fenics_theano_op
+from fenics_pymc import FenicsVJPOp
 
 from fecr import evaluate_primal, evaluate_pullback
 

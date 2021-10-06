@@ -9,11 +9,11 @@ if sys.version_info < (3, 6):
 version = "1.0.0"
 
 setup(
-    name="fenics_pymc3",
-    description="FEniCS + PyMC3",
+    name="fenics_pymc",
+    description="FEniCS + PyMC",
     version=version,
     author="Ivan Yashchuk",
     license="MIT",
-    packages=["fenics_pymc3"],
-    install_requires=["pymc3", "fdm", "fecr"],
+    packages=["fenics_pymc"],
+    install_requires=["pymc", "fdm", "fecr"],
 )

@@ -45,7 +45,7 @@ jobs:
           python -m pip install git+https://github.com/dolfin-adjoint/pyadjoint.git@master
           python -m pip install git+https://github.com/IvanYashchuk/fecr.git@master
           python -m pip install arviz==0.10.0
-          python -m pip install pymc3
+          python -m pip install pymc
 
       - name: Install current package
         shell: bash -l {0}
@@ -59,7 +59,7 @@ jobs:
           source /home/firedrake/firedrake/bin/activate
           python -c "import sys; print('\n'.join(sys.path))"
           export HDF5_DISABLE_VERSION_CHECK=1
-          python -m pytest --cov=fenics_pymc3 --cov-config=tests/.coveragerc tests/firedrake -vvv
+          python -m pytest --cov=fenics_pymc --cov-config=tests/.coveragerc tests/firedrake -vvv
 
       - name: Send coverage
         shell: bash -l {0}

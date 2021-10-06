@@ -6,13 +6,13 @@ import firedrake
 import firedrake_adjoint
 import ufl
 
-import pymc3 as pm
+import pymc as pm
 import theano.tensor as tt
 
 import fdm
 
-from fenics_pymc3 import create_fenics_theano_op
-from fenics_pymc3 import to_numpy
+from fenics_pymc import create_fenics_theano_op
+from fenics_pymc import to_numpy
 
 n = 25
 mesh = firedrake.UnitSquareMesh(n, n)

@@ -8,10 +8,10 @@ import ufl
 
 import fdm
 
-from fenics_pymc3 import create_fenics_theano_op
-from fenics_pymc3 import to_numpy
+from fenics_pymc import create_fenics_theano_op
+from fenics_pymc import to_numpy
 
-import pymc3 as pm
+import pymc as pm
 import theano.tensor as tt
 
 fenics.set_log_level(fenics.LogLevel.ERROR)

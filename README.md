@@ -1,16 +1,16 @@
-# fenics-pymc3 &middot; [![Build FEniCS](https://github.com/ivanyashchuk/fenics-pymc3/workflows/FEniCS/badge.svg)](https://github.com/ivanyashchuk/fenics-pymc3/actions?query=workflow%3AFEniCS+branch%3Amaster) [![Build Firedrake](https://github.com/ivanyashchuk/fenics-pymc3/workflows/Firedrake/badge.svg)](https://github.com/ivanyashchuk/fenics-pymc3/actions?query=workflow%3AFiredrake+branch%3Amaster) [![codecov](https://codecov.io/gh/IvanYashchuk/fenics-pymc3/branch/master/graph/badge.svg?token=Y5ULDQD9L8)](https://codecov.io/gh/IvanYashchuk/fenics-pymc3) [![DOI](https://zenodo.org/badge/269920875.svg)](https://zenodo.org/badge/latestdoi/269920875)
+# fenics-pymc &middot; [![Build FEniCS](https://github.com/ivanyashchuk/fenics-pymc/workflows/FEniCS/badge.svg)](https://github.com/ivanyashchuk/fenics-pymc/actions?query=workflow%3AFEniCS+branch%3Amaster) [![Build Firedrake](https://github.com/ivanyashchuk/fenics-pymc/workflows/Firedrake/badge.svg)](https://github.com/ivanyashchuk/fenics-pymc/actions?query=workflow%3AFiredrake+branch%3Amaster) [![codecov](https://codecov.io/gh/IvanYashchuk/fenics-pymc/branch/master/graph/badge.svg?token=Y5ULDQD9L8)](https://codecov.io/gh/IvanYashchuk/fenics-pymc) [![DOI](https://zenodo.org/badge/269920875.svg)](https://zenodo.org/badge/latestdoi/269920875)
 
-This package enables use of [FEniCS](https://fenicsproject.org/) or [Firedrake](https://firedrakeproject.org/)  for solving differentiable variational problems in [PyMC3](https://docs.pymc.io/).
+This package enables use of [FEniCS](https://fenicsproject.org/) or [Firedrake](https://firedrakeproject.org/)  for solving differentiable variational problems in [PyMC](https://docs.pymc.io/).
 
 Automatic adjoint solvers for FEniCS programs are generated with [dolfin-adjoint/pyadjoint](http://www.dolfin-adjoint.org/en/latest/).
-These solvers make it possible to use Theano's (PyMC3 backend) reverse mode automatic differentiation with FEniCS/Firedrake.
+These solvers make it possible to use Theano's (PyMC backend) reverse mode automatic differentiation with FEniCS/Firedrake.
 
 Current limitations:
 * Differentiation wrt Dirichlet boundary conditions and mesh coordinates is not implemented yet.
 
 ## Example
 Here is the demonstration of fitting coefficients of a variant of the [Poisson's PDE](https://en.wikipedia.org/wiki/Poisson%27s_equation)
-using PyMC3's NUTS sampler.
+using PyMC's NUTS sampler.
 
 ```python
 import numpy as np
@@ -19,8 +19,8 @@ fenics.set_log_level(fenics.LogLevel.ERROR)
 import fenics_adjoint as fa
 import ufl
 
-from fenics_pymc3 import create_fem_theano_op
-from fenics_pymc3 import to_numpy
+from fenics_pymc import create_fem_theano_op
+from fenics_pymc import to_numpy
 
 # Create mesh for the unit square domain
 n = 10
@@ -63,8 +63,8 @@ templates = (fa.Constant(0.0), fa.Constant(0.0))
 # Now let's create Theano wrapper of `solve_fenics` function
 theano_fem_solver = create_fem_theano_op(templates)(solve_fenics)
 
-# `theano_fem_solver` can now be used inside PyMC3's model
-import pymc3 as pm
+# `theano_fem_solver` can now be used inside PyMC's model
+import pymc as pm
 import theano.tensor as tt
 
 with pm.Model() as fit_poisson:
@@ -100,25 +100,25 @@ Then install [fecr](https://github.com/IvanYashchuk/fecr) with:
 
     python -m pip install git+https://github.com/IvanYashchuk/fecr@master
 
-Then install [PyMC3](https://docs.pymc.io/) with:
+Then install [PyMC](https://docs.pymc.io/) with:
 
-    python -m pip install pymc3
+    python -m pip install pymc
 
-After that install fenics-pymc3 with:
+After that install fenics-pymc with:
 
-    python -m pip install git+https://github.com/IvanYashchuk/fenics-pymc3.git@master
+    python -m pip install git+https://github.com/IvanYashchuk/fenics-pymc.git@master
 
 ## Reporting bugs
 
 If you found a bug, create an [issue].
 
-[issue]: https://github.com/IvanYashchuk/fenics-pymc3/issues/new
+[issue]: https://github.com/IvanYashchuk/fenics-pymc/issues/new
 
 ## Asking questions and general discussion
 
 If you have a question or anything else, create a new [discussion]. Using issues is also fine!
 
-[discussion]: https://github.com/IvanYashchuk/fenics-pymc3/discussions/new
+[discussion]: https://github.com/IvanYashchuk/fenics-pymc/discussions/new
 
 ## Contributing
 
@@ -126,7 +126,7 @@ Pull requests are welcome from everyone.
 
 Fork, then clone the repository:
 
-    git clone https://github.com/IvanYashchuk/fenics-pymc3.git
+    git clone https://github.com/IvanYashchuk/fenics-pymc.git
 
 Make your change. Add tests for your change. Make the tests pass:
 
@@ -134,4 +134,4 @@ Make your change. Add tests for your change. Make the tests pass:
 
 Check the formatting with `black` and `flake8`. Push to your fork and [submit a pull request][pr].
 
-[pr]: https://github.com/IvanYashchuk/fenics-pymc3/pulls
+[pr]: https://github.com/IvanYashchuk/fenics-pymc/pulls

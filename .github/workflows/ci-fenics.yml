@@ -18,7 +18,7 @@ jobs:
 
       - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v2
-        with: 
+        with:
           auto-update-conda: true
           python-version: 3.8
 
@@ -50,9 +50,9 @@ jobs:
           python -m pip install fdm
           python -m pip install git+https://github.com/dolfin-adjoint/pyadjoint.git@master
           python -m pip install git+https://github.com/IvanYashchuk/fecr.git@master
-          python -m pip install pymc3
+          python -m pip install pymc
 
-      - name: Install fenics-pymc3
+      - name: Install fenics-pymc
         shell: bash -l {0}
         run: |
           conda activate fenicsproject
@@ -66,7 +66,7 @@ jobs:
           conda activate fenicsproject
           python -c "import sys; print('\n'.join(sys.path))"
           export HDF5_DISABLE_VERSION_CHECK=1
-          python -m pytest --cov=fenics_pymc3 --cov-config=tests/.coveragerc tests/fenics -vvv
+          python -m pytest --cov=fenics_pymc --cov-config=tests/.coveragerc tests/fenics -vvv
 
       - name: Send coverage
         shell: bash -l {0}
