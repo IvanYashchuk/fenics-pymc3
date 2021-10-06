@@ -46,6 +46,7 @@ jobs:
           python -m pip install git+https://github.com/IvanYashchuk/fecr.git@master
           python -m pip install arviz==0.10.0
           python -m pip install pymc
+          python -m pip install theano-pymc
 
       - name: Install current package
         shell: bash -l {0}

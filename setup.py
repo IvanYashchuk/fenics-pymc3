@@ -15,5 +15,5 @@ setup(
     author="Ivan Yashchuk",
     license="MIT",
     packages=["fenics_pymc"],
-    install_requires=["pymc", "fdm", "fecr"],
+    install_requires=["pymc", "fdm", "fecr", "theano"],
 )
