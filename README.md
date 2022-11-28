@@ -1,3 +1,5 @@
+**Note:** This was a nice demo but PyMC changes its tensor backend quite frequently (first [Theano->Aesara](https://www.pymc.io/blog/v4_announcement.html#theano-aesara), then [Aesara->PyTensor](https://www.pymc.io/blog/pytensor_announcement.html)) hence this repository is now archived and read-only.
+
 # fenics-pymc3 &middot; [![Build FEniCS](https://github.com/ivanyashchuk/fenics-pymc3/workflows/FEniCS/badge.svg)](https://github.com/ivanyashchuk/fenics-pymc3/actions?query=workflow%3AFEniCS+branch%3Amaster) [![Build Firedrake](https://github.com/ivanyashchuk/fenics-pymc3/workflows/Firedrake/badge.svg)](https://github.com/ivanyashchuk/fenics-pymc3/actions?query=workflow%3AFiredrake+branch%3Amaster) [![codecov](https://codecov.io/gh/IvanYashchuk/fenics-pymc3/branch/master/graph/badge.svg?token=Y5ULDQD9L8)](https://codecov.io/gh/IvanYashchuk/fenics-pymc3) [![DOI](https://zenodo.org/badge/269920875.svg)](https://zenodo.org/badge/latestdoi/269920875)
 
 This package enables use of [FEniCS](https://fenicsproject.org/) or [Firedrake](https://firedrakeproject.org/)  for solving differentiable variational problems in [PyMC3](https://docs.pymc.io/).
